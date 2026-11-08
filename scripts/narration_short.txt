@@ -1,0 +1,11 @@
+## card | Every sensor in your phone lies | GPS jumps by metres  ·  the gyro drifts 25° a minute | the accelerometer is 119 m off within a minute
+Every sensor in your phone lies. GPS jumps around, the gyroscope drifts, and the accelerometer is a hundred metres off within a minute. So I learned sensor fusion from zero, and built micronav: an open-source positioning engine.
+
+## drive
+Here's a real drive, recorded on one iPhone with phyphox. Orange is raw GPS. Blue is micronav's fifteen-state Kalman filter: the motion sensors predict a hundred times a second, GPS corrects once a second, and it even works out how the phone sits in the car.
+
+## outage
+Now hide GPS for thirty seconds out of every ninety. A GPS-only filter misses by twenty-nine metres. micronav misses by nine, because cars don't slide sideways.
+
+## end
+Every formula written out, every filter tested. It's free and open source. pip install micronav.
