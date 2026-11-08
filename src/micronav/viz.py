@@ -13,7 +13,8 @@ LAYERS = [  # key, label, colour, weight, dashed
 ]
 
 
-def write_html(result, path, title="micronav"):
+def write_html(result, path, title="micronav", intro=None):
+    """intro: optional HTML shown in a box at the top left (e.g. what the viewer is looking at)."""
     layers = []
     for key, label, colour, weight, dashed in LAYERS:
         pts = result.get(key)
@@ -28,14 +29,15 @@ def write_html(result, path, title="micronav"):
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{title}</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>html,body,#map{{height:100%;margin:0}} .box{{background:#fff;padding:8px 10px;font:13px system-ui;border-radius:6px;max-width:320px}}</style>
+<style>html,body,#map{{height:100%;margin:0}} .box{{background:#fff;padding:8px 10px;font:13px/1.35 system-ui;border-radius:6px;max-width:320px}} @media (max-width:700px){{.box{{font-size:11.5px;max-width:62vw;padding:6px 8px}}}}</style>
 </head><body><div id="map"></div><script>
 const layers = {json.dumps(layers)};
 const stats = {json.dumps(stats)};
+const intro = {json.dumps(intro)};
 const map = L.map('map');
 L.tileLayer('https://tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{maxZoom: 19,
   attribution: '&copy; OpenStreetMap contributors'}}).addTo(map);
-const ctl = L.control.layers(null, null, {{collapsed: false}}).addTo(map);
+const ctl = L.control.layers(null, null, {{collapsed: window.innerWidth < 700}}).addTo(map);
 let bounds = null;
 for (const l of layers) {{ const b = L.latLngBounds(l.pts); bounds = bounds ? bounds.extend(b) : b; }}
 map.fitBounds(bounds);   // the map needs a view before vector layers are added
@@ -50,6 +52,11 @@ for (const l of layers) {{
 let fitted = false;
 new ResizeObserver(() => {{ if (!fitted && map.getSize().y > 0) {{
   fitted = true; map.invalidateSize(); map.fitBounds(bounds); }} }}).observe(document.getElementById('map'));
+if (intro) {{
+  const ib = L.control({{position: 'topleft'}});
+  ib.onAdd = () => {{ const d = L.DomUtil.create('div', 'box'); d.innerHTML = intro; return d; }};
+  ib.addTo(map);
+}}
 if (stats.outage) {{
   const box = L.control({{position: 'bottomleft'}});
   box.onAdd = () => {{ const d = L.DomUtil.create('div', 'box');
