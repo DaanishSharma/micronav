@@ -4,12 +4,12 @@ import json
 import numpy as np
 
 LAYERS = [  # key, label, colour, weight, dashed
-    ("raw", "raw GPS fixes", "#eb6834", 0, False),
-    ("rts", "GPS-only Kalman + RTS smoother", "#1baf7a", 3, False),
-    ("ins", "15-state filter (IMU + GPS + car constraints)", "#2a78d6", 3, False),
-    ("matched", "map-matched", "#6b4fbb", 4, False),
-    ("outage_kf", "GPS outages: GPS-only filter", "#c23b22", 2, True),
-    ("outage_ins", "GPS outages: 15-state filter", "#0b3d91", 2, True),
+    ("raw", "Raw GPS from the phone", "#eb6834", 0, False),
+    ("rts", "Cleaned GPS track", "#1baf7a", 3, False),
+    ("ins", "micronav (GPS + motion sensors)", "#2a78d6", 3, False),
+    ("matched", "Matched to roads", "#6b4fbb", 4, False),
+    ("outage_kf", "GPS switched off: GPS alone", "#c23b22", 2, True),
+    ("outage_ins", "GPS switched off: micronav", "#0b3d91", 2, True),
 ]
 
 
@@ -61,8 +61,8 @@ if (stats.outage) {{
   const box = L.control({{position: 'bottomleft'}});
   box.onAdd = () => {{ const d = L.DomUtil.create('div', 'box');
     d.innerHTML = `<b>GPS hidden ${{stats.outage.gap}} s of every ${{stats.outage.every}} s</b><br>` +
-      `GPS-only filter: ${{stats.outage.gps_only.toFixed(1)}} m off (median)<br>` +
-      `15-state filter: ${{stats.outage.fused.toFixed(1)}} m off`; return d; }};
+      `GPS alone: ${{stats.outage.gps_only.toFixed(1)}} m off (median)<br>` +
+      `micronav: ${{stats.outage.fused.toFixed(1)}} m off`; return d; }};
   box.addTo(map);
 }}
 </script></body></html>"""
